@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+
+.idea
+.venv
+.ipynb_checkpoints
+A
+data
