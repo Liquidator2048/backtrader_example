@@ -1,3 +1,10 @@
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
+
 import logging
 
 import backtrader as bt
@@ -34,7 +41,8 @@ class BaseStrategy(bt.SignalStrategy):
         id = order.ref
         pos_size = self.position.size * self.position.price
         if order.status == order.Completed:
-            self.log(f'Order #{id} - {type} {dir} - EXECUTED, Price: {price}, Cost: {value}, Comm: {comm}, Pos. Size: {pos_size}')
+            self.log(
+                f'Order #{id} - {type} {dir} - EXECUTED, Price: {price}, Cost: {value}, Comm: {comm}, Pos. Size: {pos_size}')
         elif order.status == order.Canceled:
             self.log(f'Order #{id} - {type} {dir} - Canceled - Pos. Size: {pos_size}')
         elif order.status == order.Margin:

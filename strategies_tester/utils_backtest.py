@@ -19,13 +19,23 @@ def backtest_strategy(
         commission=0.00075,
         start_cash=1000.0,
         returns_analyzer=False,
+        use_replay=False,
+        timeframe=bt.TimeFrame.Minutes,
+        compression=60,
         *args, **kwargs
 ) -> Tuple[bt.Cerebro, Any]:
     cerebro = bt.Cerebro()
 
     # data
     data = BacktestData(dataname=df)
-    cerebro.adddata(data)
+    if use_replay:
+        cerebro.replaydata(
+            data,
+            timeframe=timeframe,
+            compression=compression
+        )
+    else:
+        cerebro.adddata(data)
 
     # strategy
     cerebro.addstrategy(strategy, *args, **kwargs)
@@ -37,7 +47,7 @@ def backtest_strategy(
         cerebro.addanalyzer(bt.analyzers.Returns, _name='returns')
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name='draw_down')
     cerebro.addanalyzer(bt.analyzers.SQN, _name='sqn')
-    #cerebro.addanalyzer(bt.analyzers.VWR, _name='vwr')
+    # cerebro.addanalyzer(bt.analyzers.VWR, _name='vwr')
     cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='trade')
     cerebro.addanalyzer(bt.analyzers.GrossLeverage, _name='gross_leverage')
     # cerebro.addanalyzer(bt.analyzers.Calmar, _name='calmar')

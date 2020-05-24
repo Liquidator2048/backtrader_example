@@ -1,3 +1,9 @@
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 import backtrader as bt
 
 from ._base import BaseStrategy
@@ -29,11 +35,17 @@ class RSI2Startegy(BaseStrategy):
         self.ema_fast = bt.indicators.ExponentialMovingAverage(period=self.p.fast_ema)
         self.ema_slow = bt.indicators.ExponentialMovingAverage(period=self.p.slow_ema)
 
-        self.long_signal = self.ema_fast > self.ema_slow and self.data.close0 > self.ema_slow and self.rsi < self.p.rsi_down
-        self.close_long = False
+        self.long_signal = bt.indicators.And(
+            self.ema_fast > self.ema_slow,
+            self.data.close > self.ema_slow,
+            self.rsi < self.p.rsi_down
+        )
 
-        self.short_signal = self.ema_fast < self.ema_slow and self.data.close0 < self.ema_slow and self.rsi > self.p.rsi_up
-        self.close_short = False
+        self.short_signal = bt.indicators.And(
+            self.ema_fast < self.ema_slow,
+            self.data.close < self.ema_slow,
+            self.rsi > self.p.rsi_up
+        )
 
     def next(self):
 
@@ -48,11 +60,6 @@ class RSI2Startegy(BaseStrategy):
             if self.position.size > 0:
                 self.order = self.sell(exectype=bt.Order.StopTrail, trailpercent=self.p.traling_stop / 100)
             if self.position.size < 0:
-                self.order = self.sell(exectype=bt.Order.StopTrail, trailpercent=self.p.traling_stop / 100)
+                self.order = self.buy(exectype=bt.Order.StopTrail, trailpercent=self.p.traling_stop / 100)
 
-        if self.close_long and self.position.size > 0:
-            self.close()
-
-        if self.close_short and self.position.size < 0:
-            self.close()
 

@@ -1,3 +1,9 @@
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 import backtrader as bt
 
 from ._base import BaseStrategy
@@ -75,7 +81,7 @@ class MFIStrategy(BaseStrategy):
                 self.stop_order.addinfo(name='Short Stop Loss')
 
 
-from .optimize import OptunaOptimizeStrategy
+from ._optimize import OptunaOptimizeStrategy
 import optuna
 
 
