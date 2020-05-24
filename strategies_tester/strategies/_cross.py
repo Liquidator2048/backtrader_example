@@ -136,7 +136,7 @@ class OptimizeCrossStrategy(OptunaOptimizeStrategy):
             "ma_slow_type": trial.suggest_categorical('ma_slow_type', ['ema', 'sma']),
             "ma_slow_period": trial.suggest_categorical('ma_slow_period', [21, 34, 55, 89, 144, 200, 233, 377, 610]),
 
-            "stop_loss": trial.suggest_int("stop_loss", 1, 200),
+            "stop_loss": trial.suggest_int("stop_loss", 1, 200, step=10),
 
             "use_mfi": trial.suggest_categorical('use_mfi', [True, False])
         }

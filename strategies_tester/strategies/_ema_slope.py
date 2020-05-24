@@ -123,7 +123,7 @@ class OptimizeEMASplopeStrategy(OptunaOptimizeStrategy):
 
     def get_parameters(self, trial: optuna.Trial):
         kwargs = {
-            'stop_loss': trial.suggest_int("stop_loss", 1, 200),
+            'stop_loss': trial.suggest_int("stop_loss", 1, 200, step=10),
 
             'slope_average': trial.suggest_categorical('slope_average', ['ema', 'sma']),
             'slope_ma_length': trial.suggest_int('ma_fast_period', 5, 610),

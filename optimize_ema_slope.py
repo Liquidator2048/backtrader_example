@@ -29,7 +29,7 @@ max_evals = 100
 perc_size = 100
 commission = 0.00075
 
-study_name = f"ema_splope-{symbol}-{analyzer}-{tf}"
+study_name = f"ema_slope-{symbol}-{analyzer}-{tf}"
 
 opt = OptimizeEMASplopeStrategy(
     study_name=study_name,

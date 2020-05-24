@@ -90,7 +90,7 @@ class OptimizeMFIStrategy(OptunaOptimizeStrategy):
 
     def get_parameters(self, trial: optuna.Trial):
         kwargs = {
-            "stop_loss": trial.suggest_int("stop_loss", 1, 200),
+            "stop_loss": trial.suggest_int("stop_loss", 1, 200, step=10),
 
             'mfi_length': trial.suggest_int("mfi_length", 5, 200),
             'mfi_limit_high': trial.suggest_int("mfi_limit_high", 1, 100),
