@@ -4,9 +4,11 @@ from __future__ import (
     print_function,
     unicode_literals,
 )
+
 import backtrader as bt
 
-__all__ = ['MFI', 'SuperTrendBand', 'SuperTrend']
+__all__ = ['MFI', 'SuperTrendBand', 'SuperTrend', 'Slope']
+
 
 class MFI(bt.Indicator):
     lines = ('mfi',)
@@ -21,7 +23,6 @@ class MFI(bt.Indicator):
 
         mfiratio = bt.ind.DivByZero(flowpos, flowneg, zero=100.0)
         self.l.mfi = 100.0 - 100.0 / (1.0 + mfiratio)
-
 
 
 class SuperTrendBand(bt.Indicator):
@@ -91,3 +92,13 @@ class SuperTrend(bt.Indicator):
                 self.l.st_trend[0] = -1
 
         # st := st == -1 and close > upper_level_prev ? 1 : st == 1 and close < lower_level_prev ? -1 : st
+
+
+class Slope(bt.Indicator):
+    lines = ('slp',)
+
+    def __init__(self):
+        self.addminperiod(2)
+
+    def next(self):
+        self.l.slp[0] = (self.data[0] - self.data[-1]) / self.data[0]

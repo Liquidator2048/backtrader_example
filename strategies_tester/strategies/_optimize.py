@@ -111,17 +111,17 @@ class OptunaOptimizeStrategy(object):
             result, pnl = self.backtest(df, **kwargs)
 
             if result is None:
-                raise optuna.exceptions.TrialPruned()
+                raise optuna.exceptions.TrialPruned("no result")
 
             trial.report(result, step)
             trial.set_user_attr('backtest_pnl', pnl)
 
             if trial.should_prune():
-                raise optuna.exceptions.TrialPruned()
+                raise optuna.exceptions.TrialPruned("should_prune")
 
         # result = self.backtest(self.data[0], **kwargs)
         if result is None:
-            raise optuna.exceptions.TrialPruned()
+            raise optuna.exceptions.TrialPruned("no result")
         return result
 
     def run(self, max_evals, n_jobs=None, engine_kwargs=None):
