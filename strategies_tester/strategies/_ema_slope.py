@@ -126,7 +126,7 @@ class OptimizeEMASplopeStrategy(OptunaOptimizeStrategy):
             'stop_loss': trial.suggest_int("stop_loss", 1, 200, step=10),
 
             'slope_average': trial.suggest_categorical('slope_average', ['ema', 'sma']),
-            'slope_ma_length': trial.suggest_int('ma_fast_period', 5, 610),
+            'slope_ma_length': trial.suggest_int('slope_ma_length', 5, 610),
             'slope_fast_length': trial.suggest_int('slope_fast_length', 5, 610),
             'slope_slow_length': trial.suggest_int('slope_slow_length', 5, 610),
             'slope_trend_filter_enable': trial.suggest_categorical('slope_trend_filter_enable', [True, False]),
