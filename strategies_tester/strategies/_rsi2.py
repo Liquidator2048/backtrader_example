@@ -4,6 +4,19 @@ from __future__ import (
     print_function,
     unicode_literals,
 )
+
+"""
+Strategia ideata da 'The Crypto Gateway' www.thecryptogateway.it. 
+All credits for the startegy goes to 'The Crypto Gateway' www.thecryptogateway.it
+
+source code strategy: https://pastebin.com/cR0vvuGR
+showing: https://www.youtube.com/watch?v=YtsDTSdGP00
+"""
+
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+__credits__ = ["The Crypto Gateway ( www.thecryptogateway.it )"]
+
 import backtrader as bt
 
 from ._base import BaseStrategy
@@ -61,5 +74,3 @@ class RSI2Startegy(BaseStrategy):
                 self.order = self.sell(exectype=bt.Order.StopTrail, trailpercent=self.p.traling_stop / 100)
             if self.position.size < 0:
                 self.order = self.buy(exectype=bt.Order.StopTrail, trailpercent=self.p.traling_stop / 100)
-
-

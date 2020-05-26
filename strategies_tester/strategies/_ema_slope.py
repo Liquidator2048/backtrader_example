@@ -5,6 +5,18 @@ from __future__ import (
     unicode_literals,
 )
 
+"""
+Strategia ideata da 'The Crypto Gateway' www.thecryptogateway.it. 
+All credits for the startegy goes to 'The Crypto Gateway' www.thecryptogateway.it
+
+source code strategy: https://www.tradingview.com/script/TKg40Ska/
+showing: https://www.youtube.com/watch?v=dEYKDubBULA
+"""
+
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+__credits__ = ["The Crypto Gateway ( www.thecryptogateway.it )"]
+
 import backtrader as bt
 
 from ._base import BaseStrategy

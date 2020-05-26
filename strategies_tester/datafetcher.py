@@ -1,3 +1,6 @@
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+
 import logging
 import math
 import os

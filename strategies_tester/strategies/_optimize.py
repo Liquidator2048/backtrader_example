@@ -5,6 +5,11 @@ from __future__ import (
     unicode_literals,
 )
 
+"""Helper per ottizzazione dei parametri di una strategia di backtrader usando optuna"""
+
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+
 import logging
 import os
 from datetime import datetime

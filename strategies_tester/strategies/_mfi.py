@@ -4,6 +4,12 @@ from __future__ import (
     print_function,
     unicode_literals,
 )
+
+"""Semplice strategia di esempio"""
+
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+
 import backtrader as bt
 
 from ._base import BaseStrategy

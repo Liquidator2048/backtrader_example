@@ -5,6 +5,9 @@ from __future__ import (
     unicode_literals,
 )
 
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+
 import logging
 
 import backtrader as bt

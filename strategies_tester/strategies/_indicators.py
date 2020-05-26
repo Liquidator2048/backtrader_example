@@ -5,6 +5,9 @@ from __future__ import (
     unicode_literals,
 )
 
+__author__ = "Liquidator"
+__copyright__ = "Copyright 2020, Liquidator"
+
 import backtrader as bt
 
 __all__ = ['MFI', 'SuperTrendBand', 'SuperTrend', 'Slope']
@@ -28,6 +31,7 @@ class MFI(bt.Indicator):
 class SuperTrendBand(bt.Indicator):
     """
     Helper inidcator for Supertrend indicator
+    credits: https://github.com/subhadeepdas91/backtrader
     """
     params = (('period', 7), ('multiplier', 3))
     lines = ('basic_ub', 'basic_lb', 'st_upper_level', 'st_lower_level')
@@ -57,6 +61,7 @@ class SuperTrendBand(bt.Indicator):
 class SuperTrend(bt.Indicator):
     """
     Super Trend indicator
+    credits: https://github.com/subhadeepdas91/backtrader
     """
     params = (('period', 7), ('multiplier', 3))
     lines = ('super_trend', 'st_trend')
