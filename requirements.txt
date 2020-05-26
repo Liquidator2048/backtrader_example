@@ -6,6 +6,7 @@ backtrader==1.9.74.123
 bitmex==0.2.2
 python-binance==0.7.5
 python-dotenv
+tabulate
 
 # plot
 matplotlib==3.2.1

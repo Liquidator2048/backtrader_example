@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 
 from dotenv import load_dotenv, find_dotenv
+from tabulate import tabulate
 
 from strategies_tester.datafetcher import DataFetcher
 from strategies_tester.strategies import *
@@ -25,7 +26,7 @@ tf = "1h"
 start_cash = 1000
 symbol = "XBTUSD"
 exchange = "bitmex"
-max_evals = 10000
+max_evals = 100000
 perc_size = 100
 commission = 0.00075
 
@@ -46,23 +47,24 @@ opt = OptimizeMFIStrategy(
 
 best = opt.run(max_evals=max_evals)
 
-print(f"best result: {best}")
+print(f"* best result:\n{tabulate([best], headers='keys')}")
 
 f = time_periods[-1][0]
 t = time_periods[-1][1]
 
 dfetch = DataFetcher()
-df = dfetch.download_data(exchange='bitmex', symbol='XBTUSD', bin_size='1h', date_from=f, date_to=t)
+df = dfetch.download_data(exchange=exchange, symbol=symbol, bin_size=tf, date_from=f, date_to=t)
 
-result, pnl, cerebro, thestrats = opt.backtest(
+result, stats, cerebro, thestrats = opt.backtest(
     df=df,
     verbose=True,
     **best
 )
 
-print(f"PNL: {pnl}")
+print(f"* stats:\n{tabulate([stats], headers='keys')}")
 
 cerebro.plot()
 
 for name, analyzer in list(thestrats[0].analyzers.getitems()):
     analyzer.print()
+    input()

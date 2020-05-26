@@ -47,7 +47,7 @@ def backtest_strategy(
         cerebro.addanalyzer(bt.analyzers.Returns, _name='returns')
     cerebro.addanalyzer(bt.analyzers.DrawDown, _name='draw_down')
     cerebro.addanalyzer(bt.analyzers.SQN, _name='sqn')
-    # cerebro.addanalyzer(bt.analyzers.VWR, _name='vwr')
+    cerebro.addanalyzer(bt.analyzers.VWR, _name='vwr')
     cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='trade')
     cerebro.addanalyzer(bt.analyzers.GrossLeverage, _name='gross_leverage')
     # cerebro.addanalyzer(bt.analyzers.Calmar, _name='calmar')

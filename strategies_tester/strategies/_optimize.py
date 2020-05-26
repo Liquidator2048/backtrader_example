@@ -73,25 +73,26 @@ class OptunaOptimizeStrategy(object):
             portvalue = cerebro.broker.getvalue()
             pnl = portvalue - self.start_cash
 
+            thestrat = thestrats[0]
+
+            stats = {
+                'pnl': pnl,
+                'sqn': thestrat.analyzers.sqn.get_analysis()['sqn'],
+                'vwr': thestrat.analyzers.vwr.get_analysis()['vwr'],
+                'sharpe_ratio': thestrat.analyzers.sharpe_ratio.get_analysis()['sharperatio'],
+            }
+
             if self.analyzer == 'sqn':
-                thestrat = thestrats[0]
-                sr = thestrat.analyzers.sqn.get_analysis()
-                result = sr['sqn']
+                result = stats['sqn']
             elif self.analyzer == 'vwr':
-                thestrat = thestrats[0]
-                sr = thestrat.analyzers.vwr.get_analysis()
-                result = sr['vwr']
+                result = stats['vwr']
             elif self.analyzer == 'sharpe_ratio':
-                thestrat = thestrats[0]
-                sr = thestrat.analyzers.sharpe_ratio.get_analysis()
-                result = sr['sharperatio']
+                result = stats['sharpe_ratio']
             elif self.analyzer == 'none':
                 result = pnl
-                # self.logger.info(f"end objective with result {result}")
             else:
-                # raise optuna.exceptions.TrialPruned()
                 raise Exception(f"{self.analyzer}: analyzer not found")
-            return result, pnl, cerebro, thestrats
+            return result, stats, cerebro, thestrats
         except Exception as e:
             self.logger.error(e)
             return None, None, None, None
@@ -108,13 +109,14 @@ class OptunaOptimizeStrategy(object):
         for df in self.data:
             step += 1
 
-            result, pnl, cerebro, thestrats = self.backtest(df, **kwargs)
+            result, stats, cerebro, thestrats = self.backtest(df, **kwargs)
 
             if result is None:
                 raise optuna.exceptions.TrialPruned("no result")
 
             trial.report(result, step)
-            trial.set_user_attr('backtest_pnl', pnl)
+            trial.set_user_attr('backtest_pnl', stats['pnl'])
+            trial.set_user_attr('backtest_results', stats)
 
             if trial.should_prune():
                 raise optuna.exceptions.TrialPruned("should_prune")
