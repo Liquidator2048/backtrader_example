@@ -12,7 +12,6 @@ from dotenv import load_dotenv, find_dotenv
 
 from strategies_tester.datafetcher import DataFetcher
 from strategies_tester.strategies import *
-from strategies_tester.utils_backtest import backtest_strategy
 
 load_dotenv(find_dotenv())
 
@@ -54,18 +53,15 @@ t = time_periods[-1][1]
 dfetch = DataFetcher()
 df = dfetch.download_data(exchange='bitmex', symbol='XBTUSD', bin_size='1h', date_from=f, date_to=t)
 
-start_cash = 1000
-cerebro, thestrats = backtest_strategy(
+result, pnl, cerebro, thestrats = opt.backtest(
     df=df,
-    strategy=opt.strategy,
-    start_cash=start_cash,
-    commission=commission,
-    perc_size=perc_size,
     verbose=True,
-
     **best
 )
 
-portvalue = cerebro.broker.getvalue()
-print(f"final value: {portvalue - start_cash}")
+print(f"PNL: {pnl}")
+
 cerebro.plot()
+
+for name, analyzer in list(thestrats[0].analyzers.getitems()):
+    analyzer.print()

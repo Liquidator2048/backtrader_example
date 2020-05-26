@@ -54,12 +54,14 @@ t = time_periods[-1][1]
 dfetch = DataFetcher()
 df = dfetch.download_data(exchange='bitmex', symbol='XBTUSD', bin_size='1h', date_from=f, date_to=t)
 
-cerebro, thestrats = opt.backtest(
+result, pnl, cerebro, thestrats = opt.backtest(
     df=df,
     verbose=True,
     **best
 )
 
-portvalue = cerebro.broker.getvalue()
-print(f"final value: {portvalue - start_cash}")
+print(f"PNL: {pnl}")
 cerebro.plot()
+
+for name, analyzer in list(thestrats[0].analyzers.getitems()):
+    analyzer.print()

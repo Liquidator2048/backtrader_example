@@ -91,10 +91,10 @@ class OptunaOptimizeStrategy(object):
             else:
                 # raise optuna.exceptions.TrialPruned()
                 raise Exception(f"{self.analyzer}: analyzer not found")
-            return result, pnl
+            return result, pnl, cerebro, thestrats
         except Exception as e:
             self.logger.error(e)
-            return None, None
+            return None, None, None, None
 
     def get_parameters(self, trial: optuna.Trial):
         return {}
@@ -108,7 +108,7 @@ class OptunaOptimizeStrategy(object):
         for df in self.data:
             step += 1
 
-            result, pnl = self.backtest(df, **kwargs)
+            result, pnl, cerebro, thestrats = self.backtest(df, **kwargs)
 
             if result is None:
                 raise optuna.exceptions.TrialPruned("no result")
