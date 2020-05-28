@@ -28,10 +28,39 @@ class DataFetcher(object):
     BATCH_SIZE = 750
     DATA_DIR = 'data'
 
-    binsize_str_int = {"1m": 1, "5m": 5, "15m": 5, "30m": 5, "1h": 60, "3h": 180, "4h": 60, "1d": 60 * 24}
-    avaiable_bin_size = {"1m": "1m", "5m": "5m", "15m": "5m", "30m": "5m", "1h": "1h", "3h": "1h", "4h": "1h",
-                         "1d": "1d"}
-    real_bin_size = {"1m": 1, "5m": 5, "15m": 15, "30m": 30, "1h": 60, "3h": 60 * 3, "4h": 60 * 4, "1d": 60 * 24}
+    binsize_str_int = {
+        "1m": 1,
+        "5m": 5,
+        "15m": 5,
+        "30m": 5,
+        "1h": 60,
+        "3h": 180,
+        "4h": 60,
+        "12h": 60,
+        "1d": 60 * 24
+    }
+    avaiable_bin_size = {
+        "1m": "1m",
+        "5m": "5m",
+        "15m": "5m",
+        "30m": "5m",
+        "1h": "1h",
+        "3h": "1h",
+        "4h": "1h",
+        "12h": "1h",
+        "1d": "1d"
+    }
+    real_bin_size = {
+        "1m": 1,
+        "5m": 5,
+        "15m": 15,
+        "30m": 30,
+        "1h": 60,
+        "3h": 60 * 3,
+        "4h": 60 * 4,
+        "12h": 60 * 12,
+        "1d": 60 * 24
+    }
 
     _save_lock = None
     _save_thread = None
@@ -72,7 +101,27 @@ class DataFetcher(object):
                 cache_filepath=cache_filepath
             )
 
+        if self.avaiable_bin_size[bin_size] != bin_size:
+            df = self.resample_to_interval(df, self.real_bin_size[bin_size])
+
         return df[date_from:date_to]
+
+    def resample_to_interval(self, dataframe, interval):
+        df = dataframe.copy(deep=True)
+        # df.set_index(pd.DatetimeIndex(df[self.TIMESTAMP_COLUMN]), inplace=True)
+        ohlc_dict = {
+            # self.TIMESTAMP_COLUMN: 'first',
+            'open': 'first',
+            'high': 'max',
+            'low': 'min',
+            'close': 'last',
+            'volume': 'sum',
+        }
+
+        df = df.resample(f'{interval}min', label="right", closed="right").agg(ohlc_dict)
+        df = df.dropna(subset=['open', 'high', 'low', 'close', 'volume'])
+        # df.set_index(pd.DatetimeIndex(df[self.TIMESTAMP_COLUMN]), inplace=True)
+        return df
 
     def _save_df(self, df: pd.DataFrame, cache_filepath: str):
         import shutil
@@ -139,7 +188,8 @@ class DataFetcher(object):
         return old, new
 
     def _bitmex_download(self, symbol, bin_size: str, data_df=pd.DataFrame(), cache_filepath=None) -> pd.DataFrame:
-        oldest_point, newest_point = self._minutes_of_new_data(symbol, bin_size, data_df, exchange="bitmex")
+        oldest_point, newest_point = self._minutes_of_new_data(symbol, self.avaiable_bin_size[bin_size], data_df,
+                                                               exchange="bitmex")
         delta_min = (newest_point - oldest_point).total_seconds() / 60
         available_data = math.ceil(delta_min / self.binsize_str_int[bin_size])
         rounds = math.ceil(available_data / self.BATCH_SIZE)
@@ -155,7 +205,7 @@ class DataFetcher(object):
                     new_time = (oldest_point + t_diff)
                     data = self._bitmex_client().Trade.Trade_getBucketed(
                         symbol=symbol,
-                        binSize=bin_size,
+                        binSize=self.avaiable_bin_size[bin_size],
                         count=self.BATCH_SIZE,
                         startTime=new_time
                     ).result()[0]
@@ -198,10 +248,10 @@ class DataFetcher(object):
         columns = ['close', 'high', 'low', 'open', 'volume']
         data = pd.DataFrame(
             klines,
-            columns=columns + [self.TIMESTAMP_COLUMN, 'close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av',
-                               'ignore']
+            columns=[self.TIMESTAMP_COLUMN, ] + columns +
+                    ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
         ).dropna(
-            subset=columns + [self.TIMESTAMP_COLUMN, ]
+            subset=[self.TIMESTAMP_COLUMN, ] + columns
         )
         data['symbol'] = symbol
         data[self.TIMESTAMP_COLUMN] = pd.to_datetime(data[self.TIMESTAMP_COLUMN], unit='ms', utc=True)
