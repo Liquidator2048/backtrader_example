@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from strategies_tester.datafetcher import DataFetcher
 
 import logging
@@ -7,11 +8,11 @@ logger = logging.getLogger(__name__)
 
 dfetch = DataFetcher()
 
-logger.info("downloading binance BTCUSDT 1d")
-dfetch.download_data(exchange='binance', symbol='BTCUSDT', bin_size='1d')
-
 logger.info("downloading binance BTCUSDT 1h")
 dfetch.download_data(exchange='binance', symbol='BTCUSDT', bin_size='1h')
+
+logger.info("downloading binance BTCUSDT 1d")
+dfetch.download_data(exchange='binance', symbol='BTCUSDT', bin_size='1d')
 
 logger.info("downloading bitmex XBTUSD 1d")
 dfetch.download_data(exchange='bitmex', symbol='XBTUSD', bin_size='1d')

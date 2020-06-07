@@ -42,7 +42,7 @@ class OptunaOptimizeStrategy(object):
                  optuna_storage: str = None
                  ):
         analyzer = (analyzer or 'none').lower().replace(" ", "_")
-        assert analyzer in ['sharpe_ratio', 'sqn', 'vwr', 'none']
+        assert analyzer in ['sharpe_ratio', 'sqn', 'vwr', 'winrate', 'none']
         self.study_name = study_name
         self.perc_size = perc_size
         self.commission = commission
@@ -62,10 +62,12 @@ class OptunaOptimizeStrategy(object):
                 date_to=end
             ))
 
-    def backtest(self, df, verbose=False, **kwargs):
+    def backtest(self, df, date_from: datetime = None, date_to: datetime = None, verbose=False, **kwargs):
         try:
             cerebro, thestrats = backtest_strategy(
                 df=df,
+                date_from=date_from,
+                date_to=date_to,
                 strategy=self.strategy,
                 perc_size=self.perc_size,
                 commission=self.commission,
@@ -79,12 +81,13 @@ class OptunaOptimizeStrategy(object):
             pnl = portvalue - self.start_cash
 
             thestrat = thestrats[0]
-
+            trade_analyzer = thestrat.analyzers.trade.get_analysis()
             stats = {
                 'pnl': pnl,
                 'sqn': thestrat.analyzers.sqn.get_analysis()['sqn'],
                 'vwr': thestrat.analyzers.vwr.get_analysis()['vwr'],
                 'sharpe_ratio': thestrat.analyzers.sharpe_ratio.get_analysis()['sharperatio'],
+                'winrate': (trade_analyzer.won.total / trade_analyzer.lost.total) * 100
             }
 
             if self.analyzer == 'sqn':
@@ -93,7 +96,9 @@ class OptunaOptimizeStrategy(object):
                 result = stats['vwr']
             elif self.analyzer == 'sharpe_ratio':
                 result = stats['sharpe_ratio']
-            elif self.analyzer == 'none':
+            elif self.analyzer == 'winrate':
+                result = stats['winrate']
+            elif self.analyzer == 'none' or self.analyzer == 'pnl':
                 result = pnl
             else:
                 raise Exception(f"{self.analyzer}: analyzer not found")
@@ -120,8 +125,9 @@ class OptunaOptimizeStrategy(object):
                 raise optuna.exceptions.TrialPruned("no result")
 
             trial.report(result, step)
-            trial.set_user_attr('backtest_pnl', stats['pnl'])
-            trial.set_user_attr('backtest_results', stats)
+
+            for k in stats.keys():
+                trial.set_user_attr(f'backtest_{k}', stats[k])
 
             if trial.should_prune():
                 raise optuna.exceptions.TrialPruned("should_prune")

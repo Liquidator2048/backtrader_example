@@ -15,7 +15,7 @@ import pandas as pd
 from binance.client import Client as BinanceClient
 from bitmex import bitmex
 from bravado.exception import HTTPTooManyRequests
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 # suppress bitmex client warnings
 warnings.filterwarnings("ignore")
@@ -34,8 +34,10 @@ class DataFetcher(object):
         "15m": 5,
         "30m": 5,
         "1h": 60,
-        "3h": 180,
+        "2h": 60,
+        "3h": 60,
         "4h": 60,
+        "7h": 60,
         "12h": 60,
         "1d": 60 * 24
     }
@@ -45,8 +47,10 @@ class DataFetcher(object):
         "15m": "5m",
         "30m": "5m",
         "1h": "1h",
+        "2h": "1h",
         "3h": "1h",
         "4h": "1h",
+        "7h": "1h",
         "12h": "1h",
         "1d": "1d"
     }
@@ -56,8 +60,10 @@ class DataFetcher(object):
         "15m": 15,
         "30m": 30,
         "1h": 60,
+        "2h": 60 * 2,
         "3h": 60 * 3,
         "4h": 60 * 4,
+        "7h": 60 * 7,
         "12h": 60 * 12,
         "1d": 60 * 24
     }
@@ -235,7 +241,8 @@ class DataFetcher(object):
 
         return data_df
 
-    def _binance_download(self, symbol, bin_size: str, data_df=pd.DataFrame(), cache_filepath=None) -> pd.DataFrame:
+    def _binance_download(self, symbol, bin_size: str, data_df: pd.DataFrame = None,
+                          cache_filepath=None) -> pd.DataFrame:
         if data_df is None:
             data_df = pd.DataFrame()
         oldest_point, newest_point = self._minutes_of_new_data(symbol, bin_size, data_df, exchange="binance")
